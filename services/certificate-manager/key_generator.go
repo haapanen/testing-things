@@ -6,7 +6,6 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
-	"fmt"
 	"math/big"
 	"os"
 	"time"
@@ -38,9 +37,6 @@ func NewKeyGenerator(caCertPath string, caKeyPath string) *KeyGenerator {
 	if caCertBlock == nil {
 		panic("failed to parse PEM block containing the certificate")
 	}
-
-	fmt.Println(caKeyBlock.Type)
-	fmt.Println(caCertBlock.Type)
 
 	caKey, err := x509.ParsePKCS8PrivateKey(caKeyBlock.Bytes)
 	if err != nil {

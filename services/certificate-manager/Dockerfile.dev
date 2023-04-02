@@ -1,0 +1,33 @@
+# Use the official golang image as the builder
+FROM golang:1.19 as builder
+
+# Set the working directory within the container
+WORKDIR /app
+
+# Copy the go.mod and go.sum files to the container
+COPY go.mod go.sum ./
+
+# Download the dependencies
+RUN go mod download
+
+# Install Delve debugger
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+
+# Install CompileDaemon for hot reloading
+RUN go install github.com/githubnemo/CompileDaemon@latest
+
+# Copy the rest of the source code to the container
+COPY . .
+
+# Copy the entrypoint.sh script
+COPY entrypoint.sh /app/entrypoint.sh
+
+# Copy the build.sh script
+COPY build.sh /app/build.sh
+
+# Copy the start_debugger.sh script
+COPY start_debugger.sh /app/start_debugger.sh
+
+# Start the development container using CompileDaemon
+ENTRYPOINT ["/app/entrypoint.sh"]
+

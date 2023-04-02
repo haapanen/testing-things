@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  certificate-manager:
+    build:
+      context: ./services/certificate-manager
+      dockerfile: Dockerfile.dev
+    image: certificate-manager-dev
+    container_name: certificate-manager-dev
+    ports:
+      - "8080:8080"
+      - "2345:2345"
+    volumes:
+      - ./services/certificate-manager:/app
+      - ./infra/certs:/app/certs
+    environment:
+      DEBUG: true
+      CA_CERT_PATH: /app/certs/ca_cert.pem
+      CA_KEY_PATH: /app/certs/ca_key.pem
