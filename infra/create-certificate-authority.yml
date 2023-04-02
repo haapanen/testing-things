@@ -1,0 +1,42 @@
+---
+- name: Generate Self-Signed CA Keys
+  hosts: localhost
+  vars: 
+    ca_directory: ./certs
+    cn: example.com
+    country: US
+    state: California
+    locality_name: San Francisco
+    organization_name: Example Inc.
+    organizational_unit_name: IT
+    email_address: admin@example.com
+  gather_facts: no
+  tasks:
+    - name: Create CA directory
+      ansible.builtin.file:
+        path: "{{ ca_directory }}"
+        state: directory
+
+    - name: Generate CA private key (ed25519)
+      ansible.builtin.openssl_privatekey:
+        path: "{{ ca_directory }}/ca_key.pem"
+        type: Ed25519
+
+    - name: Generate CA Certificate Signing Request (CSR)
+      ansible.builtin.openssl_csr:
+        path: "{{ ca_directory }}/ca_csr.pem"
+        privatekey_path: "{{ ca_directory }}/ca_key.pem"
+        common_name: "{{ cn }}"
+        country_name: "{{ country }}"
+        state_or_province_name: "{{ state }}"
+        locality_name: "{{ locality_name }}"
+        organization_name: "{{ organization_name }}"
+        organizational_unit_name: "{{ organizational_unit_name }}"
+        email_address: "{{ email_address }}"
+
+    - name: Generate self-signed CA certificate
+      ansible.builtin.openssl_certificate:
+        path: "{{ ca_directory }}/ca_cert.pem"
+        privatekey_path: "{{ ca_directory }}/ca_key.pem"
+        csr_path: "{{ ca_directory }}/ca_csr.pem"
+        provider: selfsigned
